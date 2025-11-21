@@ -3,7 +3,7 @@ import { Music, Pause, Play, Volume2, VolumeX } from "lucide-react";
 
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(0.25);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
