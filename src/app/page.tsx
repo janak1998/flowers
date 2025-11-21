@@ -40,15 +40,19 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+
     const updateColor = () => {
-      const hour = new Date().getHours();
-      setColor(HOUR_COLORS[hour % 24]);
+      // Change color every 5 minutes
+      const fiveMinuteIntervals = Math.floor(Date.now() / (5 * 60 * 1000));
+      setColor(HOUR_COLORS[fiveMinuteIntervals % HOUR_COLORS.length]);
     };
 
     updateColor();
-    const interval = setInterval(updateColor, 60000); // Check every minute
+    const intervalId = setInterval(updateColor, 1000); // Check every second to be precise
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   if (!mounted) return null; // or a loading state
@@ -64,7 +68,7 @@ export default function Home() {
 
       {/* Time indicator (Optional, for debugging/visual) */}
       <div className="absolute top-4 left-4 text-black/30 text-xs font-mono">
-        Color for hour {new Date().getHours()}: {color}
+        Color index: {Math.floor(Date.now() / (5 * 60 * 1000)) % HOUR_COLORS.length} | {color}
       </div>
     </main>
   );
