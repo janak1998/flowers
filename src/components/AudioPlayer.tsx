@@ -7,21 +7,39 @@ export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-      const playPromise = audioRef.current.play();
+    const timer = setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.volume = volume;
+        const playPromise = audioRef.current.play();
 
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.log("Auto-play prevented:", error);
-            setIsPlaying(false);
-          });
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch((error) => {
+              console.log("Auto-play prevented:", error);
+              setIsPlaying(false);
+
+              // Fallback: Play on first interaction
+              const handleInteraction = () => {
+                if (audioRef.current) {
+                  audioRef.current.play()
+                    .then(() => setIsPlaying(true))
+                    .catch((e) => console.error("Interaction play failed:", e));
+                }
+                document.removeEventListener("click", handleInteraction);
+                document.removeEventListener("keydown", handleInteraction);
+              };
+
+              document.addEventListener("click", handleInteraction);
+              document.addEventListener("keydown", handleInteraction);
+            });
+        }
       }
-    }
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const togglePlay = () => {

@@ -42,13 +42,13 @@ export default function Home() {
     setMounted(true);
 
     const updateColor = () => {
-      // Change color every 5 minutes
-      const fiveMinuteIntervals = Math.floor(Date.now() / (5 * 60 * 1000));
-      setColor(HOUR_COLORS[fiveMinuteIntervals % HOUR_COLORS.length]);
+      const randomIndex = Math.floor(Math.random() * HOUR_COLORS.length);
+      setColor(HOUR_COLORS[randomIndex]);
     };
 
     updateColor();
-    const intervalId = setInterval(updateColor, 1000); // Check every second to be precise
+    // Change color every 5 minutes
+    const intervalId = setInterval(updateColor, 5 * 60 * 1000);
 
     return () => {
       clearInterval(intervalId);
@@ -68,7 +68,7 @@ export default function Home() {
 
       {/* Time indicator (Optional, for debugging/visual) */}
       <div className="absolute top-4 left-4 text-black/30 text-xs font-mono">
-        Color index: {Math.floor(Date.now() / (5 * 60 * 1000)) % HOUR_COLORS.length} | {color}
+        Color: {color}
       </div>
     </main>
   );
