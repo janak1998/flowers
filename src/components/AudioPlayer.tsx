@@ -3,6 +3,7 @@ import { Music, Pause, Play, Volume2, VolumeX } from "lucide-react";
 
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showToast, setShowToast] = useState(true);
   const [volume, setVolume] = useState(0.25);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -16,6 +17,7 @@ export default function AudioPlayer() {
           playPromise
             .then(() => {
               setIsPlaying(true);
+              setShowToast(false);
             })
             .catch((error) => {
               console.log("Auto-play prevented:", error);
@@ -25,7 +27,10 @@ export default function AudioPlayer() {
               const handleInteraction = () => {
                 if (audioRef.current) {
                   audioRef.current.play()
-                    .then(() => setIsPlaying(true))
+                    .then(() => {
+                      setIsPlaying(true);
+                      setShowToast(false);
+                    })
                     .catch((e) => console.error("Interaction play failed:", e));
                 }
                 document.removeEventListener("click", handleInteraction);
@@ -48,6 +53,7 @@ export default function AudioPlayer() {
         audioRef.current.pause();
       } else {
         audioRef.current.play();
+        setShowToast(false);
       }
       setIsPlaying(!isPlaying);
     }
@@ -62,7 +68,7 @@ export default function AudioPlayer() {
   };
 
   return (
-    <div className="absolute bottom-10 right-10 z-20 flex flex-col items-end gap-2">
+    <div className="absolute bottom-5 lg:bottom-10 right-5 lg:right-10 z-20 flex flex-row items-end gap-2">
       <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white/80 shadow-lg transition-all hover:bg-white/20">
         <button onClick={() => setVolume(volume === 0 ? 0.25 : 0)} className="hover:text-white">
           {volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -98,6 +104,14 @@ export default function AudioPlayer() {
         src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"
         loop
       />
+
+      {/* Toast Notification */}
+      {showToast && !isPlaying && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-xl border border-white/10 animate-fade-in z-50 flex items-center gap-3">
+          <Music className="w-4 h-4 animate-bounce" />
+          <span className="text-sm font-medium">Click anywhere to start music</span>
+        </div>
+      )}
     </div>
   );
 }
